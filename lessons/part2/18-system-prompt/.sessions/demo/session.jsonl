@@ -1,11 +1,21 @@
 {"type":"session","version":1}
-{"seq":1,"time":1791806856889,"type":"user/message","data":{"content":"北京天气怎么样？"},"surfaceOp":"append"}
-{"seq":2,"time":1791806856891,"type":"system/message","data":{"content":"你是一个天气助手，只回答天气相关的问题。\n\n回答时语气礼貌，不确定就明说。\n\n你可以使用以下工具：\n- get_weather：查询一个城市的天气。需要城市名。"},"surfaceOp":"append"}
-{"seq":3,"time":1791806856893,"type":"tool/call","data":{"callId":"call-1","name":"get_weather","arguments":"{\"city\":\"北京\"}"}}
-{"seq":4,"time":1791806856895,"type":"tool/result","data":{"callId":"call-1","name":"get_weather","value":"北京：晴，12°C","isError":false},"surfaceOp":"append"}
-{"seq":5,"time":1791806856898,"type":"assistant/message","data":{"text":"北京：晴，12°C。另外提醒您，出门请酌情携带雨具。"},"surfaceOp":"append"}
-{"seq":6,"time":1791806856994,"type":"user/message","data":{"content":"帮我写一首诗"},"surfaceOp":"append"}
-{"seq":7,"time":1791806856996,"type":"assistant/message","data":{"text":"抱歉，我是一个天气助手，只能回答天气相关的问题。"},"surfaceOp":"append"}
-{"seq":8,"time":1791806857242,"type":"user/message","data":{"content":"帮我写一首诗"},"surfaceOp":"append"}
-{"seq":9,"time":1791806857244,"type":"system/message","data":{"content":"你是一个天气助手，主要回答天气，但也能闲聊几句。\n\n回答时语气礼貌，不确定就明说。\n\n你可以使用以下工具：\n- get_weather：查询一个城市的天气。需要城市名。"},"surfaceOp":{"op":"replace","startSeq":2,"endSeq":2}}
-{"seq":10,"time":1791806857246,"type":"assistant/message","data":{"text":"晴空一字一行诗，云落枝头化作雨。"},"surfaceOp":"append"}
+{"seq":1,"time":1791898768534,"type":"user/message","data":{"content":"北京天气怎么样？"},"surfaceOp":"append"}
+{"seq":2,"time":1791898768535,"type":"system/message","data":{"content":"你是一个天气助手，只回答天气相关的问题。\n\n回答时语气礼貌，不确定就明说。\n\n你可以使用以下工具：\n- get_weather：查询一个城市的天气。需要城市名。"},"surfaceOp":"append"}
+{"seq":3,"time":1791898768538,"type":"tool/call","data":{"callId":"call-1","name":"get_weather","arguments":"{\"city\":\"北京\"}"}}
+{"seq":4,"time":1791898768539,"type":"tool/result","data":{"callId":"call-1","name":"get_weather","value":"北京：晴，12°C","isError":false},"surfaceOp":"append"}
+{"seq":5,"time":1791898768541,"type":"assistant/message","data":{"text":"北京：晴，12°C。另外提醒您，出门请酌情携带雨具。"},"surfaceOp":"append"}
+{"seq":6,"time":1791898768641,"type":"user/message","data":{"content":"帮我写一首诗"},"surfaceOp":"append"}
+{"seq":7,"time":1791898768644,"type":"assistant/message","data":{"text":"抱歉，我是一个天气助手，只能回答天气相关的问题。"},"surfaceOp":"append"}
+{"seq":8,"time":1791898768886,"type":"user/message","data":{"content":"帮我写一首诗"},"surfaceOp":"append"}
+{"seq":9,"time":1791898768888,"type":"system/message","data":{"content":"你是一个天气助手，主要回答天气，但也能闲聊几句。\n\n回答时语气礼貌，不确定就明说。\n\n你可以使用以下工具：\n- get_weather：查询一个城市的天气。需要城市名。"},"surfaceOp":{"op":"replace","startSeq":2,"endSeq":2}}
+{"seq":10,"time":1791898768890,"type":"assistant/message","data":{"text":"晴空一字一行诗，云落枝头化作雨。"},"surfaceOp":"append"}
+{"seq":11,"time":1791898769673,"type":"user/message","data":{"content":"北京天气怎么样？"},"surfaceOp":"append"}
+{"seq":12,"time":1791898769674,"type":"system/message","data":{"content":"你是一个天气助手，只回答天气相关的问题。\n\n回答时语气礼貌，不确定就明说。\n\n你可以使用以下工具：\n- get_weather：查询一个城市的天气。需要城市名。"},"surfaceOp":"append"}
+{"seq":13,"time":1791898769676,"type":"tool/call","data":{"callId":"call-1","name":"get_weather","arguments":"{\"city\":\"北京\"}"}}
+{"seq":14,"time":1791898769679,"type":"tool/result","data":{"callId":"call-1","name":"get_weather","value":"北京：晴，12°C","isError":false},"surfaceOp":"append"}
+{"seq":15,"time":1791898769680,"type":"assistant/message","data":{"text":"北京：晴，12°C。另外提醒您，出门请酌情携带雨具。"},"surfaceOp":"append"}
+{"seq":16,"time":1791898769778,"type":"user/message","data":{"content":"帮我写一首诗"},"surfaceOp":"append"}
+{"seq":17,"time":1791898769780,"type":"assistant/message","data":{"text":"抱歉，我是一个天气助手，只能回答天气相关的问题。"},"surfaceOp":"append"}
+{"seq":18,"time":1791898770025,"type":"user/message","data":{"content":"帮我写一首诗"},"surfaceOp":"append"}
+{"seq":19,"time":1791898770026,"type":"system/message","data":{"content":"你是一个天气助手，主要回答天气，但也能闲聊几句。\n\n回答时语气礼貌，不确定就明说。\n\n你可以使用以下工具：\n- get_weather：查询一个城市的天气。需要城市名。"},"surfaceOp":{"op":"replace","startSeq":12,"endSeq":12}}
+{"seq":20,"time":1791898770027,"type":"assistant/message","data":{"text":"晴空一字一行诗，云落枝头化作雨。"},"surfaceOp":"append"}

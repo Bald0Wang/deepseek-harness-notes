@@ -1,0 +1,7 @@
+{"type":"session","version":1}
+{"seq":1,"time":1791898760446,"type":"user/message","data":{"content":"北京天气怎么样？"},"surfaceOp":"append"}
+{"seq":2,"time":1791898760448,"type":"tool/call","data":{"callId":"call-1","name":"get_weather","arguments":"{\"city\":\"北京\"}"}}
+{"seq":3,"time":1791898760450,"type":"tool/result","data":{"callId":"call-1","name":"get_weather","value":"北京：晴，12°C","isError":false},"surfaceOp":"append"}
+{"seq":4,"time":1791898760452,"type":"assistant/message","data":{"text":"北京：晴，12°C。出门看情况带把伞。"},"surfaceOp":"append"}
+{"seq":5,"time":1791898760492,"type":"user/message","data":{"content":"你好"},"surfaceOp":"append"}
+{"seq":6,"time":1791898760494,"type":"assistant/message","data":{"text":"我不知道怎么回答\"你好\"，但我可以查天气。"},"surfaceOp":"append"}

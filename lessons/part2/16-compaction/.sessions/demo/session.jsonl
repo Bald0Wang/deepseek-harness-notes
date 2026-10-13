@@ -1,10 +1,19 @@
 {"type":"session","version":1}
-{"seq":1,"time":1791804515342,"type":"user/message","data":{"content":"北京天气怎么样？"},"surfaceOp":"append"}
-{"seq":2,"time":1791804515344,"type":"tool/call","data":{"callId":"call-1","name":"get_weather","arguments":"{\"city\":\"北京\"}"}}
-{"seq":3,"time":1791804515346,"type":"tool/result","data":{"callId":"call-1","name":"get_weather","value":"北京：晴，12°C","isError":false},"surfaceOp":"append"}
-{"seq":4,"time":1791804515348,"type":"assistant/message","data":{"text":"北京：晴，12°C。出门看情况带把伞。"},"surfaceOp":"append"}
-{"seq":5,"time":1791804515388,"type":"user/message","data":{"content":"你好"},"surfaceOp":"append"}
-{"seq":6,"time":1791804515391,"type":"assistant/message","data":{"text":"我不知道怎么回答\"你好\"，但我可以查天气。"},"surfaceOp":"append"}
-{"seq":7,"time":1791804515497,"type":"assistant/message","data":{"text":"（摘要）用户问了北京天气，模型调了 get_weather 拿到\"北京：晴，12°C\"，并提醒出门看情况带伞。"},"surfaceOp":{"op":"replace","startSeq":1,"endSeq":6}}
-{"seq":8,"time":1791804515544,"type":"user/message","data":{"content":"刚才我问了什么？"},"surfaceOp":"append"}
-{"seq":9,"time":1791804515546,"type":"assistant/message","data":{"text":"我只记得一份摘要：你问了北京天气，别的细节被压掉了。"},"surfaceOp":"append"}
+{"seq":1,"time":1791898763811,"type":"user/message","data":{"content":"北京天气怎么样？"},"surfaceOp":"append"}
+{"seq":2,"time":1791898763814,"type":"tool/call","data":{"callId":"call-1","name":"get_weather","arguments":"{\"city\":\"北京\"}"}}
+{"seq":3,"time":1791898763816,"type":"tool/result","data":{"callId":"call-1","name":"get_weather","value":"北京：晴，12°C","isError":false},"surfaceOp":"append"}
+{"seq":4,"time":1791898763818,"type":"assistant/message","data":{"text":"北京：晴，12°C。出门看情况带把伞。"},"surfaceOp":"append"}
+{"seq":5,"time":1791898763857,"type":"user/message","data":{"content":"你好"},"surfaceOp":"append"}
+{"seq":6,"time":1791898763859,"type":"assistant/message","data":{"text":"我不知道怎么回答\"你好\"，但我可以查天气。"},"surfaceOp":"append"}
+{"seq":7,"time":1791898763950,"type":"assistant/message","data":{"text":"（摘要）用户问了北京天气，模型调了 get_weather 拿到\"北京：晴，12°C\"，并提醒出门看情况带伞。"},"surfaceOp":{"op":"replace","startSeq":1,"endSeq":6}}
+{"seq":8,"time":1791898764012,"type":"user/message","data":{"content":"刚才我问了什么？"},"surfaceOp":"append"}
+{"seq":9,"time":1791898764014,"type":"assistant/message","data":{"text":"我只记得一份摘要：你问了北京天气，别的细节被压掉了。"},"surfaceOp":"append"}
+{"seq":10,"time":1791898764827,"type":"user/message","data":{"content":"北京天气怎么样？"},"surfaceOp":"append"}
+{"seq":11,"time":1791898764830,"type":"tool/call","data":{"callId":"call-1","name":"get_weather","arguments":"{\"city\":\"北京\"}"}}
+{"seq":12,"time":1791898764832,"type":"tool/result","data":{"callId":"call-1","name":"get_weather","value":"北京：晴，12°C","isError":false},"surfaceOp":"append"}
+{"seq":13,"time":1791898764834,"type":"assistant/message","data":{"text":"北京：晴，12°C。出门看情况带把伞。"},"surfaceOp":"append"}
+{"seq":14,"time":1791898764888,"type":"user/message","data":{"content":"你好"},"surfaceOp":"append"}
+{"seq":15,"time":1791898764890,"type":"assistant/message","data":{"text":"我不知道怎么回答\"你好\"，但我可以查天气。"},"surfaceOp":"append"}
+{"seq":16,"time":1791898764980,"type":"assistant/message","data":{"text":"（摘要）用户问了北京天气，模型调了 get_weather 拿到\"北京：晴，12°C\"，并提醒出门看情况带伞。"},"surfaceOp":{"op":"replace","startSeq":1,"endSeq":6}}
+{"seq":17,"time":1791898765027,"type":"user/message","data":{"content":"刚才我问了什么？"},"surfaceOp":"append"}
+{"seq":18,"time":1791898765029,"type":"assistant/message","data":{"text":"你没有历史记忆，每次请求只带当前这一句。"},"surfaceOp":"append"}
