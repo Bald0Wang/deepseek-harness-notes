@@ -1,0 +1,26 @@
+{
+  "name": "deepseek-harness-notes",
+  "version": "0.1.0",
+  "private": true,
+  "description": "给 JS 学习者的 DeepSeek Harness (Cordis) 渐进式实战教程",
+  "type": "module",
+  "scripts": {
+    "lesson": "node --import tsx/esm",
+    "typecheck": "tsc --noEmit",
+    "check": "tsc --noEmit"
+  },
+  "engines": {
+    "node": "^22.19 || >=24"
+  },
+  "dependencies": {
+    "@deepseek-ai/cordis": "~4.0.4",
+    "@deepseek-ai/cordis-plugin-include": "~1.0.9",
+    "@deepseek-ai/cordis-plugin-loader": "~1.0.5",
+    "@deepseek-ai/schemastery": "~3.18.4"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

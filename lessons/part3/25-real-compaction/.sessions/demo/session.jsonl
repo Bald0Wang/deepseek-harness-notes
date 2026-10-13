@@ -1,0 +1,13 @@
+{"type":"session","version":1}
+{"seq":1,"time":1791893556615,"type":"user/message","data":{"content":"北京天气怎么样？"},"surfaceOp":"append"}
+{"seq":2,"time":1791893556878,"type":"tool/call","data":{"callId":"call-1","name":"get_weather","arguments":"{\"city\":\"北京\"}"}}
+{"seq":3,"time":1791893556880,"type":"tool/result","data":{"callId":"call-1","name":"get_weather","value":"北京：晴，12°C","isError":false},"surfaceOp":"append"}
+{"seq":4,"time":1791893558313,"type":"assistant/message","data":{"text":"北京：晴，12°C。出门看情况带把伞。"},"surfaceOp":"append"}
+{"seq":5,"time":1791893558320,"type":"user/message","data":{"content":"帮我算 7*6"},"surfaceOp":"append"}
+{"seq":6,"time":1791893558578,"type":"tool/call","data":{"callId":"call-3","name":"calc","arguments":"{\"a\":7,\"b\":6}"}}
+{"seq":7,"time":1791893558580,"type":"tool/result","data":{"callId":"call-2","name":"calc","value":"invalid arguments: $.op 是必填项，但没有提供","isError":true},"surfaceOp":"append"}
+{"seq":8,"time":1791893558839,"type":"tool/call","data":{"callId":"call-3-fix","name":"calc","arguments":"{\"a\":7,\"b\":6,\"op\":\"*\"}"}}
+{"seq":9,"time":1791893558841,"type":"tool/result","data":{"callId":"call-3","name":"calc","value":"7 * 6 = 42","isError":false},"surfaceOp":"append"}
+{"seq":10,"time":1791893559975,"type":"assistant/message","data":{"text":"算好了：7 * 6 = 42"},"surfaceOp":"append"}
+{"seq":11,"time":1791893559978,"type":"user/message","data":{"content":"你好"},"surfaceOp":"append"}
+{"seq":12,"time":1791893561852,"type":"assistant/message","data":{"text":"我不知道怎么回答\"你好\"，但我可以查天气、也会算数。"},"surfaceOp":"append"}

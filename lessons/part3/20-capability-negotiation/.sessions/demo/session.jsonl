@@ -1,0 +1,12 @@
+{"type":"session","version":1}
+{"seq":1,"time":1791803115554,"type":"user/message","data":{"content":"北京天气怎么样？"},"surfaceOp":"append"}
+{"seq":2,"time":1791803115556,"type":"tool/call","data":{"callId":"call-1","name":"get_weather","arguments":"{\"city\":\"北京\"}"}}
+{"seq":3,"time":1791803115558,"type":"tool/result","data":{"callId":"call-1","name":"get_weather","value":"北京：晴，12°C","isError":false},"surfaceOp":"append"}
+{"seq":4,"time":1791803115561,"type":"assistant/message","data":{"text":"北京：晴，12°C。出门看情况带把伞。"},"surfaceOp":"append"}
+{"seq":5,"time":1791803115600,"type":"user/message","data":{"content":"帮我算 7*6"},"surfaceOp":"append"}
+{"seq":6,"time":1791803115603,"type":"tool/call","data":{"callId":"call-3","name":"calc","arguments":"{\"a\":7,\"b\":6,\"op\":\"*\"}"}}
+{"seq":7,"time":1791803115606,"type":"tool/result","data":{"callId":"call-3","name":"calc","value":"7 * 6 = 42","isError":false},"surfaceOp":"append"}
+{"seq":8,"time":1791803115610,"type":"assistant/message","data":{"text":"算好了：7 * 6 = 42"},"surfaceOp":"append"}
+{"seq":9,"time":1791803115661,"type":"user/message","data":{"content":"你好"},"surfaceOp":"append"}
+{"seq":10,"time":1791803115664,"type":"assistant/message","data":{"text":"我不知道怎么回答\"你好\"，但我可以查天气、也会算数。"},"surfaceOp":"append"}
+{"seq":11,"time":1791803115707,"type":"assistant/message","data":{"text":"（摘要）用户问了北京天气和一道乘法，模型分别调了 get_weather 和 calc。"},"surfaceOp":{"op":"replace","startSeq":1,"endSeq":10}}

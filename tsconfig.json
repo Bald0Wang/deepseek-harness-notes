@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": [
+    "node_modules",
+    "lessons/part3/23-error-recovery",
+    "lessons/part3/24-context-budget",
+    "lessons/part3/25-real-compaction",
+    "lessons/part3/26-session-lifecycle",
+    "lessons/part3/27-real-api"
+  ]
+}

@@ -1,0 +1,6 @@
+# 目录即插件：只写加载器，不写它扫出来的东西。
+# provider / weather / calc / session / mock-provider / main 全部由
+# ./plugin-directory.ts 读 manifest.ts 后自行加载，这里看不到它们的名字。
+- name: './plugin-directory.ts'
+  config:
+    root: '.'
