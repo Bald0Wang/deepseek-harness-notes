@@ -138,6 +138,12 @@ function highlightSidebar(page) {
   for (const item of document.querySelectorAll('.side-item')) {
     item.classList.toggle('active', item.dataset.id === id)
   }
+  // 篇章标题在「浏览该篇介绍页」时点亮；看具体课时也保持高亮归属篇
+  for (const title of document.querySelectorAll('.side-part-title')) {
+    const owningPart = page.kind === 'part' ? page.part.id : page.kind === 'lesson' ? page.lesson.dir.split('/')[1] : null
+    const partId = state.content.parts.find((p) => p.dir === owningPart)?.id ?? owningPart
+    title.classList.toggle('active', title.dataset.id === partId)
+  }
 }
 
 // ---------- 侧栏 ----------
@@ -182,7 +188,11 @@ function renderSidebar() {
   for (const part of state.content.parts) {
     const section = el('div', 'side-section')
     section.dataset.part = part.id
-    section.append(el('div', 'side-part-title', `${part.label} · ${part.title}`))
+    // 篇章标题可点：跳到该篇的介绍页（#/part1 等）
+    const partTitle = el('a', 'side-part-title', `${part.label} · ${part.title}`)
+    partTitle.href = `#/${part.id}`
+    partTitle.dataset.id = part.id
+    section.append(partTitle)
     for (const lesson of part.lessons) {
       const meta = lesson.meta
       const haystack = [

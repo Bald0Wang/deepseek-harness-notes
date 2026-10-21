@@ -3,9 +3,9 @@
 // Context、加载本课 cordis.yml 声明的插件 → 插件代码（转译自原 .ts）在
 // 浏览器里真跑：console/process.stdout 进终端，node:fs 落在内存文件系统。
 
-import { marked } from '../vendor/marked.esm.js?v=1792580631914'
-import hljs from '../vendor/hljs.js?v=1792580631914'
-import { renderIntroOverview, renderMapPage, renderLessonAside, renderLessonBrief, renderMechanism } from './course-map.js?v=1792580631914'
+import { marked } from '../vendor/marked.esm.js?v=1792581065675'
+import hljs from '../vendor/hljs.js?v=1792581065675'
+import { renderIntroOverview, renderMapPage, renderLessonAside, renderLessonBrief, renderMechanism } from './course-map.js?v=1792581065675'
 
 marked.setOptions({ gfm: true, breaks: false })
 
@@ -138,6 +138,12 @@ function highlightSidebar(page) {
   for (const item of document.querySelectorAll('.side-item')) {
     item.classList.toggle('active', item.dataset.id === id)
   }
+  // 篇章标题在「浏览该篇介绍页」时点亮；看具体课时也保持高亮归属篇
+  for (const title of document.querySelectorAll('.side-part-title')) {
+    const owningPart = page.kind === 'part' ? page.part.id : page.kind === 'lesson' ? page.lesson.dir.split('/')[1] : null
+    const partId = state.content.parts.find((p) => p.dir === owningPart)?.id ?? owningPart
+    title.classList.toggle('active', title.dataset.id === partId)
+  }
 }
 
 // ---------- 侧栏 ----------
@@ -182,7 +188,11 @@ function renderSidebar() {
   for (const part of state.content.parts) {
     const section = el('div', 'side-section')
     section.dataset.part = part.id
-    section.append(el('div', 'side-part-title', `${part.label} · ${part.title}`))
+    // 篇章标题可点：跳到该篇的介绍页（#/part1 等）
+    const partTitle = el('a', 'side-part-title', `${part.label} · ${part.title}`)
+    partTitle.href = `#/${part.id}`
+    partTitle.dataset.id = part.id
+    section.append(partTitle)
     for (const lesson of part.lessons) {
       const meta = lesson.meta
       const haystack = [
@@ -642,7 +652,7 @@ async function runLesson(lesson) {
   try {
     // 构建期会把这里的导入加 ?v=<buildId>；若页面本身是旧构建（?v= 404），
     // 回退到无版本 URL 拉最新文件——旧页面配新启动器是兼容组合
-    state.runnerMod ??= await import('../vendor/dsh-launcher.js?v=1792580631914').catch(() => import('../vendor/dsh-laun' + 'cher.js'))
+    state.runnerMod ??= await import('../vendor/dsh-launcher.js?v=1792581065675').catch(() => import('../vendor/dsh-laun' + 'cher.js'))
     const base = new URL(lesson.dir, location.href).href
     const result = await state.runnerMod.runLesson(base, (line) => write(line + '\n'), {
       stripDisabled,

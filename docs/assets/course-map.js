@@ -3,7 +3,7 @@
 // 设计原则：所有图都是普通 HTML + CSS，不用 canvas/svg——可选中、可打印、
 // 在手机上自动折行，也不会因为某个库挂了就白屏。
 
-import { COURSE } from './course-data.js?v=1792580631914'
+import { COURSE } from './course-data.js?v=1792581065675'
 
 const el = (tag, cls, text) => {
   const node = document.createElement(tag)
