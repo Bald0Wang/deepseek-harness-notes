@@ -1212,3 +1212,27 @@ article.md a.broken-doc-link {
 }
 .section-head h2 { margin: 0; }
 .section-note { font-size: 13px; color: var(--fg-faint); }
+
+/* ---------- 跳回源码的小火箭 ---------- */
+
+.rocket-btn {
+  position: fixed;
+  right: 22px;
+  bottom: 26px;
+  z-index: 60;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  transition: 0.15s;
+}
+.rocket-btn:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  transform: translateY(-2px);
+}
+#lesson-code { scroll-margin-top: 72px; }

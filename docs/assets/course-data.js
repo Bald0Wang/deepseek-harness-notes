@@ -4,7 +4,7 @@
 // 这个文件是纯数据，构建脚本会直接 import 它，把每课 meta 塞进 content.json；
 // 页面端只读 content.json，不再重复请求这些数据。
 
-import { LESSON_FACTS } from './lesson-facts.js?v=1792581452637'
+import { LESSON_FACTS } from './lesson-facts.js?v=1792581845011'
 
 export const STAGES = [
   {

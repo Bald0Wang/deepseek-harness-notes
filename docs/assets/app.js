@@ -3,9 +3,9 @@
 // Context、加载本课 cordis.yml 声明的插件 → 插件代码（转译自原 .ts）在
 // 浏览器里真跑：console/process.stdout 进终端，node:fs 落在内存文件系统。
 
-import { marked } from '../vendor/marked.esm.js?v=1792581452637'
-import hljs from '../vendor/hljs.js?v=1792581452637'
-import { renderIntroOverview, renderMapPage, renderLessonAside, renderLessonBrief, renderMechanism } from './course-map.js?v=1792581452637'
+import { marked } from '../vendor/marked.esm.js?v=1792581845011'
+import hljs from '../vendor/hljs.js?v=1792581845011'
+import { renderIntroOverview, renderMapPage, renderLessonAside, renderLessonBrief, renderMechanism } from './course-map.js?v=1792581845011'
 
 marked.setOptions({ gfm: true, breaks: false })
 
@@ -333,7 +333,12 @@ function renderLesson(lesson) {
   if (lesson.nodeRun) meta.append(` · Node 参考 ${lesson.nodeRun.ms}ms`)
   wrap.append(meta)
 
-  // 先看全景：本课在整门课里的位置 + 机制结构图
+  // 源码放最前：先看代码在干嘛，再读讲解；读完用右下角 🚀 跳回来
+  const codeSection = buildCodeSection(lesson)
+  codeSection.id = 'lesson-code'
+  wrap.append(codeSection)
+
+  // 本课在整门课里的位置 + 机制结构图
   const lessonMeta = lesson.meta
   if (lessonMeta) {
     wrap.append(renderLessonBrief(lessonMeta))
@@ -356,7 +361,6 @@ function renderLesson(lesson) {
   if (aside) wrap.append(aside)
 
   wrap.append(buildPager(lesson))
-  wrap.append(buildCodeSection(lesson))
   setMain(wrap)
   refreshDots()
   refreshEditIndicators(lesson)
@@ -654,7 +658,7 @@ async function runLesson(lesson) {
   try {
     // 构建期会把这里的导入加 ?v=<buildId>；若页面本身是旧构建（?v= 404），
     // 回退到无版本 URL 拉最新文件——旧页面配新启动器是兼容组合
-    state.runnerMod ??= await import('../vendor/dsh-launcher.js?v=1792581452637').catch(() => import('../vendor/dsh-laun' + 'cher.js'))
+    state.runnerMod ??= await import('../vendor/dsh-launcher.js?v=1792581845011').catch(() => import('../vendor/dsh-laun' + 'cher.js'))
     const base = new URL(lesson.dir, location.href).href
     const result = await state.runnerMod.runLesson(base, (line) => write(line + '\n'), {
       stripDisabled,
@@ -1025,6 +1029,33 @@ function refreshEditIndicators(lesson) {
 const keyInput = $('#key-input')
 const keyStatus = $('#key-status')
 
+// ---------- 右下角 🚀：读到下面了一键跳回本课源码 ----------
+
+function initRocket() {
+  const rocket = el('button', 'rocket-btn', '🚀')
+  rocket.id = 'rocket-code'
+  rocket.title = '跳回本课源码'
+  rocket.hidden = true
+  rocket.addEventListener('click', () => {
+    document.querySelector('#lesson-code')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
+  document.body.append(rocket)
+
+  // 滚过源码区之后才出现；离开课页隐藏
+  let ticking = false
+  window.addEventListener('scroll', () => {
+    if (ticking) return
+    ticking = true
+    requestAnimationFrame(() => {
+      ticking = false
+      const code = document.querySelector('#lesson-code')
+      const past = window.scrollY > 480 && code
+        && code.getBoundingClientRect().bottom < 0 // 源码区已完全滚出视口
+      rocket.hidden = !past
+    })
+  }, { passive: true })
+}
+
 function initKeyBox() {
   keyInput.value = localStorage.getItem('dsh-deepseek-key') || ''
   keyInput.addEventListener('change', () => {
@@ -1115,6 +1146,7 @@ document.addEventListener('click', (e) => {
 })
 
 initKeyBox()
+initRocket()
 boot().catch((err) => {
   setMain(el('div', 'loading', `加载失败：${err}`))
 })
