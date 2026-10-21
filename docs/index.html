@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DeepSeek Harness 实战教程 · 浏览器交互运行版</title>
+  <meta name="description" content="27 课渐进式教程：在浏览器里直接运行每一课的 Cordis 插件代码，终端实时反馈。内容来自 Relph1119/deepseek-harness-notes。">
+  <link rel="stylesheet" href="./assets/hljs.css">
+  <link rel="stylesheet" href="./assets/app.css">
+
+  <!-- 把 Node 内置模块映射到浏览器 shim；@deepseek-ai/* 映射到 vendor 的 ESM。
+       import map 对所有模块生效——包括 Cordis Loader 动态 import 的课程插件。 -->
+  <script type="importmap">
+  {
+    "imports": {
+      "node:fs": "./shims/fs.js",
+      "node:fs/promises": "./shims/fs-promises.js",
+      "node:path": "./shims/path.js",
+      "node:path/posix": "./shims/path.js",
+      "node:module": "./shims/module.js",
+      "node:url": "./shims/url.js",
+      "node:os": "./shims/os.js",
+      "node:util": "./shims/util.js",
+      "node:util/types": "./shims/util-types.js",
+      "node:events": "./shims/events.js",
+      "node:timers": "./shims/timers.js",
+      "node:timers/promises": "./shims/timers-promises.js",
+      "@deepseek-ai/cordis": "./vendor/cordis.js",
+      "@deepseek-ai/cordis-plugin-loader": "./vendor/cordis-plugin-loader.js",
+      "@deepseek-ai/cordis-plugin-include": "./shims/module.js",
+      "@deepseek-ai/schemastery": "./vendor/schemastery.js",
+      "@deepseek-ai/cosmokit": "./vendor/cosmokit.js"
+    }
+  }
+  </script>
+
+  <!-- process 全局 shim：必须在任何 ES 模块之前注入。
+       DEEPSEEK_API_KEY 从 localStorage 读——课程 27 的 real-provider
+       读的就是 process.env.DEEPSEEK_API_KEY，与 Node 行为一致。 -->
+  <script>
+  (function () {
+    'use strict'
+    var KEY = 'DEEPSEEK_API_KEY'
+    function storedKey() {
+      try { var v = localStorage.getItem('dsh-deepseek-key'); return v === null ? '' : v } catch (e) { return '' }
+    }
+    var envTarget = {}
+    var env = new Proxy(envTarget, {
+      get: function (_t, k) {
+        if (k === KEY) return storedKey()
+        if (k === Symbol.toStringTag) return 'Object'
+        return undefined
+      },
+      has: function (_t, k) { return k === KEY },
+      set: function (_t, k, v) {
+        if (k === KEY) { try { localStorage.setItem('dsh-deepseek-key', String(v)) } catch (e) {} }
+        return true
+      },
+      ownKeys: function () { return [KEY] },
+      getOwnPropertyDescriptor: function (_t, k) {
+        if (k === KEY) return { value: storedKey(), writable: true, enumerable: true, configurable: true }
+        return undefined
+      },
+      deleteProperty: function () { return true },
+    })
+    function stream(s) {
+      if (typeof globalThis.__DSH_OUT__ === 'function') {
+        try { globalThis.__DSH_OUT__(String(s)) } catch (e) { /* 页面未就绪时静默 */ }
+      }
+      return true
+    }
+    globalThis.process = {
+      env: env,
+      versions: { node: '' },
+      execArgv: [],
+      platform: 'browser',
+      argv: ['node'],
+      stdout: { write: stream, columns: 96, isTTY: false },
+      stderr: { write: stream, columns: 96, isTTY: false },
+      cwd: function () { return globalThis.__DSH_CWD__ || '/' },
+      nextTick: function (fn) {
+        var args = Array.prototype.slice.call(arguments, 1)
+        queueMicrotask(function () { fn.apply(null, args) })
+      },
+      on: function () { return globalThis.process },
+      off: function () {},
+      once: function () { return globalThis.process },
+      removeListener: function () {},
+      listeners: function () { return [] },
+      exitCode: undefined,
+    }
+    if (!globalThis.__DSH_FS__) globalThis.__DSH_FS__ = new Map()
+  })()
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <button id="sidebar-toggle" class="icon-btn" title="目录" aria-label="展开目录">☰</button>
+    <a class="brand" href="#/intro">
+      <span class="brand-mark">⌘</span>
+      <span class="brand-text">DeepSeek Harness 实战教程<em>浏览器交互运行版</em></span>
+    </a>
+    <div class="topbar-right">
+      <button id="key-mobile" class="icon-btn key-mobile" title="填入 DeepSeek API Key" aria-label="填入 API Key">🔑</button>
+      <div class="key-box" id="key-box" title="第 27 课真 API 用的 DEEPSEEK_API_KEY，只存在你浏览器的 localStorage 里">
+        <span class="key-label">API Key</span>
+        <input id="key-input" type="password" placeholder="sk-…（选填，仅第 27 课真 API 需要）" autocomplete="off" spellcheck="false">
+        <button id="key-test" class="btn btn-ghost">测试</button>
+        <span id="key-status" class="key-status"></span>
+      </div>
+      <a class="topbar-map" href="#/map">🗺 全景图</a>
+      <a class="repo-link" href="https://github.com/Relph1119/deepseek-harness-notes" target="_blank" rel="noopener">源仓库 ↗</a>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav id="sidebar" class="sidebar"></nav>
+    <main id="main" class="main">
+      <div class="loading">加载中…</div>
+    </main>
+  </div>
+
+  <script type="module" src="./assets/app.js"></script>
+</body>
+</html>

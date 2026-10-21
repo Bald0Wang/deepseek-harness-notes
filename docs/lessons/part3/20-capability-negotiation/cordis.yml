@@ -1,0 +1,8 @@
+﻿- name: './provider.ts'
+- name: './weather.ts'
+- name: './calc.ts'
+- name: './session.ts'
+- name: './mock-provider.ts'
+- name: './main.ts'
+
+

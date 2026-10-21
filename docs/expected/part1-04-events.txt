@@ -1,0 +1,3 @@
+[stats] tool_call -> 1
+[stats] tool_call -> 2
+[stats] prompt -> 1

@@ -1,0 +1,2 @@
+[console] 构建完成
+[console] 一切正常

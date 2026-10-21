@@ -1,0 +1,3 @@
+- name: './provider.ts'
+- name: './weather.ts'
+- name: './main.ts'

@@ -7,7 +7,8 @@
   "scripts": {
     "lesson": "node --import tsx/esm",
     "typecheck": "tsc --noEmit",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "build:site": "node tools/build-site.mjs"
   },
   "engines": {
     "node": "^22.19 || >=24"
@@ -20,6 +21,9 @@
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
+    "esbuild": "^0.28.2",
+    "highlight.js": "^11.12.0",
+    "marked": "^18.1.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }

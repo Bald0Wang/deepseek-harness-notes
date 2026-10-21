@@ -1,0 +1,20 @@
+
+=== 用户说：北京天气怎么样？ ===
+[可用工具] get_weather — 查询一个城市的天气。需要城市名。
+[模型决定] 调用 get_weather，参数 {"city":"北京"}
+[工具返回] 北京：晴，12°C
+
+=== 用户说：把温度换成华氏 ===
+[可用工具] get_weather — 查询一个城市的天气。需要城市名。
+[模型决定] 调用 get_weather，参数 {"city":"北京","unit":"fahrenheit"}
+[工具返回] 北京：晴，12°C（已换算为华氏）
+
+=== 用户说：空参数 ===
+[可用工具] get_weather — 查询一个城市的天气。需要城市名。
+[模型决定] 调用 get_weather，参数 {}
+[工具失败] invalid arguments: $.city 是必填项，但没有提供
+
+=== 用户说：单位用错 ===
+[可用工具] get_weather — 查询一个城市的天气。需要城市名。
+[模型决定] 调用 get_weather，参数 {"city":"北京","unit":"kelvin"}
+[工具失败] invalid arguments: $.unit 必须是 "celsius" / "fahrenheit" 之一

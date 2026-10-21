@@ -210,3 +210,6 @@ dist
 .pnp.*
 
 .DS_Store
+
+# 课程运行产生的会话日志（构建时临时生成，参考输出另存在 docs/expected）
+lessons/**/.sessions/

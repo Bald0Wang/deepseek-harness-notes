@@ -1,0 +1,27 @@
+=== 插件状态 ===
+Loader: ACTIVE
+isolate: ACTIVE
+Include: LOADING
+main: LOADING
+diagnose-service: ACTIVE
+Diagnose: ACTIVE
+
+=== 加载一个会抛错的插件 ===
+[broken-plugin] Error: boom：我在构造时炸了
+    at new BrokenPlugin (/Volumes/拓展/workspace/dsh-learning/deepseek-harness-notes/lessons/part1/08-diagnostics/main.ts:13:11)
+    at Fiber.execute (file:///Volumes/%E6%8B%93%E5%B1%95/workspace/dsh-learning/deepseek-harness-notes/node_modules/@deepseek-ai/cordis/lib/index.js:1068:24)
+    at file:///Volumes/%E6%8B%93%E5%B1%95/workspace/dsh-learning/deepseek-harness-notes/node_modules/@deepseek-ai/cordis/lib/index.js:1142:34
+    at Timeout._onTimeout (/Volumes/拓展/workspace/dsh-learning/deepseek-harness-notes/lessons/part1/08-diagnostics/main.ts:29:23)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)
+捕获到错误： boom：我在构造时炸了
+
+=== 故障后重新看一眼 ===
+=== 插件状态 ===
+Loader: ACTIVE
+isolate: ACTIVE
+Include: ACTIVE
+main: ACTIVE
+diagnose-service: ACTIVE
+Diagnose: ACTIVE
+BrokenPlugin: FAILED

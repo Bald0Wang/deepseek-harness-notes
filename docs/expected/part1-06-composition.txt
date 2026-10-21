@@ -1,0 +1,2 @@
+[launcher] 插件未激活（PENDING，可能在等待依赖）：needs-timer
+needs-timer is PENDING — a required service is missing
