@@ -18,6 +18,10 @@ import { COURSE } from './site/course-data.js'
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const docs = join(root, 'docs')
 
+// 每次构建的唯一 id：注入 content.json 与 index.html，页面用它检测
+// 「新内容 + 旧运行时」的缓存混用（症状：加载器去 fetch 已不存在的 .ts）。
+const buildId = String(Date.now())
+
 // ---------- 0. 清场 ----------
 
 rmSync(docs, { recursive: true, force: true })
@@ -235,6 +239,7 @@ function firstHeading(md, fallback) {
 }
 
 const content = {
+  buildId,
   generatedAt: new Date().toISOString(),
   intro: readFileSync(join(root, 'README.md'), 'utf8'),
   parts: [],
@@ -290,6 +295,24 @@ cpSync(join(root, 'tools/site/app.js'), join(docs, 'assets', 'app.js'))
 cpSync(join(root, 'tools/site/app.css'), join(docs, 'assets', 'app.css'))
 for (const file of ['course-map.js', 'course-data.js', 'lesson-facts.js']) {
   cpSync(join(root, 'tools/site', file), join(docs, 'assets', file))
+}
+
+// ---------- 6. 版本固化 ----------
+// 1) index.html 里的 __BUILD_ID__ 占位符替换成真实 buildId（样式/脚本
+//    引用带 ?v=，绕开浏览器对同名旧文件的启发式缓存）；
+// 2) 页面自己写的模块（app / course-map / course-data / dsh-launcher）
+//    里的相对 .js 导入统一加 ?v=，保证同一构建内的资源同生同灭。
+{
+  const htmlPath = join(docs, 'index.html')
+  writeFileSync(htmlPath, readFileSync(htmlPath, 'utf8').replaceAll('__BUILD_ID__', buildId))
+
+  const bustRe = /(from\s+|import\s*\(\s*|import\s+)('|")(\.\.?\/[^'"\n]+?\.js(?!\?))\2/g
+  for (const file of ['assets/app.js', 'assets/course-map.js', 'assets/course-data.js', 'vendor/dsh-launcher.js']) {
+    const p = join(docs, file)
+    const out = readFileSync(p, 'utf8').replace(bustRe, (_m, pre, q, spec) => `${pre}${q}${spec}?v=${buildId}${q}`)
+    writeFileSync(p, out)
+  }
+  console.log(`版本固化：buildId=${buildId}`)
 }
 
 console.log('构建完成 → docs/')

@@ -3,9 +3,9 @@
 // Context、加载本课 cordis.yml 声明的插件 → 插件代码（转译自原 .ts）在
 // 浏览器里真跑：console/process.stdout 进终端，node:fs 落在内存文件系统。
 
-import { marked } from '../vendor/marked.esm.js'
-import hljs from '../vendor/hljs.js'
-import { renderIntroOverview, renderMapPage, renderLessonAside, renderLessonBrief, renderMechanism } from './course-map.js'
+import { marked } from '../vendor/marked.esm.js?v=1792557643578'
+import hljs from '../vendor/hljs.js?v=1792557643578'
+import { renderIntroOverview, renderMapPage, renderLessonAside, renderLessonBrief, renderMechanism } from './course-map.js?v=1792557643578'
 
 marked.setOptions({ gfm: true, breaks: false })
 
@@ -41,6 +41,7 @@ function saveRunResults() {
 async function boot() {
   const res = await fetch('./content.json')
   state.content = await res.json()
+  checkBuildConsistency()
   // 标题里的行内代码反引号（如 deriveMessages()）在页面标题里不需要，
   // 正文里的代码块由 markdown 正常渲染。
   for (const part of state.content.parts) {
@@ -49,6 +50,23 @@ async function boot() {
   renderSidebar()
   window.addEventListener('hashchange', route)
   route()
+}
+
+// 页面（index.html/app.js）与内容（content.json）可能来自不同次构建——
+// 浏览器或 CDN 的缓存各过期各的。混用最典型的症状：旧启动器去 fetch
+// main.ts（新构建里只有 main.js），终端报 Failed to fetch dynamically
+// imported module。检测到不一致就挂横幅引导刷新。
+function checkBuildConsistency() {
+  const pageBuild = globalThis.__DSH_BUILD__ || ''
+  const contentBuild = state.content.buildId || ''
+  if (!pageBuild || !contentBuild || pageBuild === contentBuild) return
+  const banner = el('div', 'stale-banner')
+  const text = el('span')
+  text.append('⚠️ 站点刚更新过，本页面加载的还是旧版资源（继续使用可能出现「Failed to fetch dynamically imported module」之类的报错）。')
+  const reload = el('button', 'btn btn-primary', '刷新到最新版')
+  reload.addEventListener('click', () => location.reload())
+  banner.append(text, reload)
+  document.body.prepend(banner)
 }
 
 function lessons() {
@@ -571,7 +589,9 @@ async function runLesson(lesson) {
 
   let ctx = null
   try {
-    state.runnerMod ??= await import('../vendor/dsh-launcher.js')
+    // 构建期会把这里的导入加 ?v=<buildId>；若页面本身是旧构建（?v= 404），
+    // 回退到无版本 URL 拉最新文件——旧页面配新启动器是兼容组合
+    state.runnerMod ??= await import('../vendor/dsh-launcher.js?v=1792557643578').catch(() => import('../vendor/dsh-laun' + 'cher.js'))
     const base = new URL(lesson.dir, location.href).href
     const result = await state.runnerMod.runLesson(base, (line) => write(line + '\n'), {
       stripDisabled,
@@ -581,6 +601,7 @@ async function runLesson(lesson) {
   } catch (err) {
     failed = true
     write(`${err?.stack ?? err}\n`, 't-err')
+    writeImportFailureHint(err)
   }
 
   // 等输出平息：课程里有 loader.await() 之后的异步剧情（流式回答、恢复轮），
@@ -629,6 +650,15 @@ async function runLesson(lesson) {
   runBtn.disabled = false
   runBtn.textContent = '▶ 再跑一次'
   state.running = false
+}
+
+// 模块动态加载失败最常见的原因是缓存的新旧构建混用（其次是网络），
+// 给一句能直接照做的人话提示。
+function writeImportFailureHint(err) {
+  const msg = String(err?.message ?? err ?? '')
+  if (/Failed to fetch dynamically imported module|error loading dynamically imported module|Importing a module script failed/i.test(msg)) {
+    termAppend('t-warn', '提示：这多半是浏览器缓存了旧版页面资源。刷新本页（⌘R / Ctrl+R）即可解决；若刷新后仍报错，检查网络或稍后再试。\n')
+  }
 }
 
 function normalizeOutput(text) {

@@ -8,9 +8,9 @@
 //
 // 加载器、插件动态 import、生命周期报告（FiberState）与 launcher.ts 完全一致。
 
-import { Context } from './cordis.js'
-import Loader from './cordis-plugin-loader.js'
-import { parseYmlEntries } from './yml-entries.js'
+import { Context } from './cordis.js?v=1792557643578'
+import Loader from './cordis-plugin-loader.js?v=1792557643578'
+import { parseYmlEntries } from './yml-entries.js?v=1792557643578'
 
 // FiberState：0 PENDING / 1 LOADING / 2 ACTIVE / 3 FAILED / 4 UNLOADING / 5 DISPOSED
 const FiberState = { PENDING: 0, LOADING: 1, ACTIVE: 2, FAILED: 3, UNLOADING: 4, DISPOSED: 5 }
@@ -43,6 +43,14 @@ export async function runLesson(lessonUrl, write, options = {}) {
         .map((arg) => (arg instanceof Error ? (arg.stack ?? arg.message) : String(arg)))
         .join(' ')
       write(`[${message.name}] ${text}`)
+      // Loader 动态 import 插件失败（最常见原因：浏览器缓存的新旧构建混用，
+      // 旧启动器会去 fetch 已不存在的 .ts）——补一句能照做的提示
+      if (
+        message.name === 'loader'
+        && message.args.some((arg) => /Failed to fetch dynamically imported module|error loading dynamically imported module|Importing a module script failed/i.test(String(arg?.message ?? arg)))
+      ) {
+        write('提示：多半是浏览器缓存了旧版页面资源——刷新本页（⌘R / Ctrl+R）即可解决。')
+      }
     },
   })
 

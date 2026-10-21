@@ -43,6 +43,14 @@ export async function runLesson(lessonUrl, write, options = {}) {
         .map((arg) => (arg instanceof Error ? (arg.stack ?? arg.message) : String(arg)))
         .join(' ')
       write(`[${message.name}] ${text}`)
+      // Loader 动态 import 插件失败（最常见原因：浏览器缓存的新旧构建混用，
+      // 旧启动器会去 fetch 已不存在的 .ts）——补一句能照做的提示
+      if (
+        message.name === 'loader'
+        && message.args.some((arg) => /Failed to fetch dynamically imported module|error loading dynamically imported module|Importing a module script failed/i.test(String(arg?.message ?? arg)))
+      ) {
+        write('提示：多半是浏览器缓存了旧版页面资源——刷新本页（⌘R / Ctrl+R）即可解决。')
+      }
     },
   })
 
