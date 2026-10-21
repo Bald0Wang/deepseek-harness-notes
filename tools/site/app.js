@@ -453,6 +453,9 @@ function stripFirstHeading(scope) {
 
 function highlightCode(scope) {
   for (const block of scope.querySelectorAll('pre code')) {
+    // 无语言标注的围栏（预期输出、终端记录）保持纯文本终端展示：
+    // highlight.js 的自动语言猜测会把 `from` 之类当成 JS 关键字染红，引起误解
+    if (!/(^|\s)language-[\w-]+/.test(block.className)) continue
     // v11 对打过 data-highlighted 标记的元素会直接跳过——重渲染复用元素时必须清掉
     delete block.dataset.highlighted
     try { hljs.highlightElement(block) } catch { /* 高亮失败不影响阅读 */ }

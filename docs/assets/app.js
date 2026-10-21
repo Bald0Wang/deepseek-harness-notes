@@ -3,9 +3,9 @@
 // Context、加载本课 cordis.yml 声明的插件 → 插件代码（转译自原 .ts）在
 // 浏览器里真跑：console/process.stdout 进终端，node:fs 落在内存文件系统。
 
-import { marked } from '../vendor/marked.esm.js?v=1792581845011'
-import hljs from '../vendor/hljs.js?v=1792581845011'
-import { renderIntroOverview, renderMapPage, renderLessonAside, renderLessonBrief, renderMechanism } from './course-map.js?v=1792581845011'
+import { marked } from '../vendor/marked.esm.js?v=1792582185196'
+import hljs from '../vendor/hljs.js?v=1792582185196'
+import { renderIntroOverview, renderMapPage, renderLessonAside, renderLessonBrief, renderMechanism } from './course-map.js?v=1792582185196'
 
 marked.setOptions({ gfm: true, breaks: false })
 
@@ -453,6 +453,9 @@ function stripFirstHeading(scope) {
 
 function highlightCode(scope) {
   for (const block of scope.querySelectorAll('pre code')) {
+    // 无语言标注的围栏（预期输出、终端记录）保持纯文本终端展示：
+    // highlight.js 的自动语言猜测会把 `from` 之类当成 JS 关键字染红，引起误解
+    if (!/(^|\s)language-[\w-]+/.test(block.className)) continue
     // v11 对打过 data-highlighted 标记的元素会直接跳过——重渲染复用元素时必须清掉
     delete block.dataset.highlighted
     try { hljs.highlightElement(block) } catch { /* 高亮失败不影响阅读 */ }
@@ -658,7 +661,7 @@ async function runLesson(lesson) {
   try {
     // 构建期会把这里的导入加 ?v=<buildId>；若页面本身是旧构建（?v= 404），
     // 回退到无版本 URL 拉最新文件——旧页面配新启动器是兼容组合
-    state.runnerMod ??= await import('../vendor/dsh-launcher.js?v=1792581845011').catch(() => import('../vendor/dsh-laun' + 'cher.js'))
+    state.runnerMod ??= await import('../vendor/dsh-launcher.js?v=1792582185196').catch(() => import('../vendor/dsh-laun' + 'cher.js'))
     const base = new URL(lesson.dir, location.href).href
     const result = await state.runnerMod.runLesson(base, (line) => write(line + '\n'), {
       stripDisabled,
