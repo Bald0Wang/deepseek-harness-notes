@@ -3,9 +3,9 @@
 // Context、加载本课 cordis.yml 声明的插件 → 插件代码（转译自原 .ts）在
 // 浏览器里真跑：console/process.stdout 进终端，node:fs 落在内存文件系统。
 
-import { marked } from '../vendor/marked.esm.js?v=1792557643578'
-import hljs from '../vendor/hljs.js?v=1792557643578'
-import { renderIntroOverview, renderMapPage, renderLessonAside, renderLessonBrief, renderMechanism } from './course-map.js?v=1792557643578'
+import { marked } from '../vendor/marked.esm.js?v=1792580631914'
+import hljs from '../vendor/hljs.js?v=1792580631914'
+import { renderIntroOverview, renderMapPage, renderLessonAside, renderLessonBrief, renderMechanism } from './course-map.js?v=1792580631914'
 
 marked.setOptions({ gfm: true, breaks: false })
 
@@ -34,6 +34,39 @@ function loadRunResults() {
 }
 function saveRunResults() {
   try { localStorage.setItem('dsh-run-results', JSON.stringify(state.runResults)) } catch {}
+}
+
+// ---------- 代码修改存储 ----------
+// { 'p14/main.ts': '改过的完整源码', 'p5/cordis.yml': '…' }
+// 只存浏览器 localStorage；「还原代码修改」按课清空。
+
+function loadCodeEdits() {
+  try { return JSON.parse(localStorage.getItem('dsh-code-edits') || '{}') } catch { return {} }
+}
+function saveCodeEdits(all) {
+  try { localStorage.setItem('dsh-code-edits', JSON.stringify(all)) } catch (e) {
+    termAppend('t-warn', '（保存修改失败：浏览器存储空间不足）\n')
+  }
+}
+function lessonEdits(lesson) {
+  const prefix = lesson.id + '/'
+  return Object.fromEntries(
+    Object.entries(loadCodeEdits()).filter(([k]) => k.startsWith(prefix)).map(([k, v]) => [k.slice(prefix.length), v]),
+  )
+}
+function setCodeEdit(lesson, file, source) {
+  const all = loadCodeEdits()
+  const key = lesson.id + '/' + file
+  if (source === null) delete all[key]
+  else all[key] = source
+  saveCodeEdits(all)
+}
+function clearLessonEdits(lesson) {
+  const all = loadCodeEdits()
+  for (const key of Object.keys(all)) {
+    if (key.startsWith(lesson.id + '/')) delete all[key]
+  }
+  saveCodeEdits(all)
 }
 
 // ---------- 内容与路由 ----------
@@ -316,6 +349,7 @@ function renderLesson(lesson) {
   wrap.append(buildCodeSection(lesson))
   setMain(wrap)
   refreshDots()
+  refreshEditIndicators(lesson)
 }
 
 function buildPager(lesson) {
@@ -464,13 +498,22 @@ function buildRunner(lesson) {
   resetBtn.addEventListener('click', () => {
     globalThis.__DSH_FS__.clear()
     renderFsPane()
-    termAppend('.t-meta', '(已清空内存文件系统)\n')
+    termAppend('t-meta', '(已清空内存文件系统)\n')
+  })
+  const resetCodeBtn = el('button', 'btn', '还原代码修改')
+  resetCodeBtn.id = 'reset-code-btn'
+  resetCodeBtn.hidden = true
+  resetCodeBtn.title = '把本课所有被改过的源码/yml 恢复成仓库原版'
+  resetCodeBtn.addEventListener('click', () => {
+    clearLessonEdits(lesson)
+    renderLesson(lesson)
+    termAppend('t-meta', '(已还原本课全部代码修改)\n')
   })
   const clearBtn = el('button', 'btn btn-ghost', '清屏')
   clearBtn.addEventListener('click', () => { $('#term').textContent = '' })
   const runBtn = el('button', 'btn btn-primary', '▶ 运行')
   runBtn.id = 'run-btn'
-  head.append(resetBtn, clearBtn, runBtn)
+  head.append(resetBtn, resetCodeBtn, clearBtn, runBtn)
   runner.append(head)
 
   const cmd = el('div', 'runner-cmd')
@@ -588,13 +631,24 @@ async function runLesson(lesson) {
   }
 
   let ctx = null
+  // 本课的代码修改：.ts 交给启动器现场转译，yml 直接替代磁盘版本
+  const edits = lessonEdits(lesson)
+  const editedYml = edits['cordis.yml'] ?? null
+  const tsEdits = Object.fromEntries(Object.entries(edits).filter(([f]) => f.endsWith('.ts')))
+  const sources = Object.fromEntries(lesson.files.map((f) => [f.name, f.code]))
+  if (Object.keys(edits).length) {
+    termAppend('t-meta', `(已应用本地代码修改：${Object.keys(edits).join('、')} —— 输出会与 Node 参考不同；还原点「还原代码修改」)\n`)
+  }
   try {
     // 构建期会把这里的导入加 ?v=<buildId>；若页面本身是旧构建（?v= 404），
     // 回退到无版本 URL 拉最新文件——旧页面配新启动器是兼容组合
-    state.runnerMod ??= await import('../vendor/dsh-launcher.js?v=1792557643578').catch(() => import('../vendor/dsh-laun' + 'cher.js'))
+    state.runnerMod ??= await import('../vendor/dsh-launcher.js?v=1792580631914').catch(() => import('../vendor/dsh-laun' + 'cher.js'))
     const base = new URL(lesson.dir, location.href).href
     const result = await state.runnerMod.runLesson(base, (line) => write(line + '\n'), {
       stripDisabled,
+      edits: tsEdits,
+      sources,
+      editedYml,
     })
     ctx = result.ctx
     if (result.hasFailure) failed = true
@@ -637,7 +691,7 @@ async function runLesson(lesson) {
     if (verdict?.match) {
       setStatus('ok', `✓ 完成 · ${elapsed}ms · 与 Node 参考输出一致`)
     } else if (verdict) {
-      setStatus('diff', `✓ 完成 · ${elapsed}ms · 与 Node 参考有差异（${verdict.diffLines} 行，点击查看）`)
+      setStatus('diff', `✓ 完成 · ${elapsed}ms · 与 Node 参考有差异（${verdict.diffLines} 行${Object.keys(edits).length ? '，含本地修改' : ''}，点击查看）`)
       $('#run-status').onclick = () => {
         const tab = document.querySelector('[data-tab="expected"]')
         tab?.click()
@@ -799,48 +853,157 @@ function renderFsPane() {
   pane.append(list, content)
 }
 
-// ---------- 源码查看 ----------
+// ---------- 源码查看与编辑 ----------
+// 每个文件页签支持「编辑此文件」：保存后，下一次「▶ 运行」会用改过的
+// 源码（.ts 在浏览器里现场转译，cordis.yml 直接替换）——课程 md 里
+// 「动手改一改」的实验都能在页面上直接做。
 
 function buildCodeSection(lesson) {
   const section = el('section', 'code-section')
-  section.append(el('h2', null, '本课源码'))
+  const head = el('div', 'section-head')
+  head.append(el('h2', null, '本课源码'))
+  head.append(el('span', 'section-note', '改了就能跑：点「编辑」，保存后再按「▶ 运行」'))
+  section.append(head)
+
   const tabs = el('div', 'code-tabs')
   const view = el('div', 'code-view')
   const pre = el('pre')
   const codeEl = el('code')
   pre.append(codeEl)
-  view.append(pre)
+
+  // 编辑器面板（与只读视图互斥展示）
+  const editorWrap = el('div', 'code-editor')
+  editorWrap.style.display = 'none'
+  const editorBar = el('div', 'code-editor-bar')
+  const editorHint = el('span', 'code-editor-hint')
+  const saveBtn = el('button', 'btn btn-primary', '保存修改')
+  const cancelBtn = el('button', 'btn', '放弃')
+  const revertBtn = el('button', 'btn btn-ghost', '还原原文')
+  editorBar.append(editorHint, el('span', 'code-editor-spacer'), revertBtn, cancelBtn, saveBtn)
+  const textarea = el('textarea', 'code-textarea')
+  textarea.spellcheck = false
+  textarea.wrap = 'off'
+  editorWrap.append(editorBar, textarea)
+
+  view.append(pre, editorWrap)
 
   const entries = [
-    ...lesson.files.map((f) => ({ label: f.name, code: f.code, lang: 'typescript' })),
-    { label: 'cordis.yml', code: lesson.yml, lang: 'yaml' },
+    ...lesson.files.map((f) => ({ name: f.name, label: f.name, code: f.code, lang: 'typescript' })),
+    { name: 'cordis.yml', label: 'cordis.yml', code: lesson.yml, lang: 'yaml' },
   ]
+
+  let current = null   // 当前展示的 entry
+  let editing = false  // 是否处于编辑模式
+
+  const copy = el('button', 'btn btn-ghost code-copy', '复制')
+  copy.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(editing ? textarea.value : codeEl.textContent)
+      copy.textContent = '已复制'
+      setTimeout(() => (copy.textContent = '复制'), 1200)
+    } catch { /* 剪贴板不可用时忽略 */ }
+  })
+  const editBtn = el('button', 'btn btn-ghost code-edit', '✏️ 编辑')
+  editBtn.addEventListener('click', () => enterEdit())
+  view.append(copy, editBtn)
+
+  function show(entry) {
+    current = entry
+    editing = false
+    editorWrap.style.display = 'none'
+    pre.style.display = ''
+    editBtn.style.display = ''
+    copy.style.display = ''
+    codeEl.className = `language-${entry.lang}`
+    // 展示内容：有修改的显示修改版
+    codeEl.textContent = lessonEdits(lesson)[entry.name] ?? entry.code
+    try { hljs.highlightElement(codeEl) } catch { /* 忽略高亮错误 */ }
+    editBtn.textContent = '✏️ 编辑'
+    refreshMarks()
+  }
+
+  function enterEdit() {
+    if (!current) return
+    editing = true
+    pre.style.display = 'none'
+    editorWrap.style.display = ''
+    copy.style.display = 'none'
+    editBtn.style.display = 'none'
+    textarea.value = lessonEdits(lesson)[current.name] ?? current.code
+    editorHint.textContent = `正在编辑 ${current.name}（Tab 缩进两格；保存后按「▶ 运行」生效）`
+    refreshMarks()
+    textarea.focus()
+  }
+
+  function exitEdit() {
+    if (current) show(current)
+  }
+
+  // Tab 键插入两格缩进，而不是跳出文本框
+  textarea.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab' && !e.metaKey && !e.ctrlKey) {
+      e.preventDefault()
+      const { selectionStart: s, selectionEnd: t, value } = textarea
+      textarea.value = value.slice(0, s) + '  ' + value.slice(t)
+      textarea.selectionStart = textarea.selectionEnd = s + 2
+    }
+    if (e.key === 'Escape') exitEdit()
+  })
+
+  saveBtn.addEventListener('click', () => {
+    if (!current) return
+    if (textarea.value === current.code) {
+      // 改回了原样：视为还原
+      setCodeEdit(lesson, current.name, null)
+      termAppend('t-meta', `(${current.name} 与原文一致，已视为还原)\n`)
+    } else {
+      setCodeEdit(lesson, current.name, textarea.value)
+      termAppend('t-meta', `(已保存 ${current.name} 的修改，按「▶ 运行」用新代码跑)\n`)
+    }
+    refreshEditIndicators(lesson)
+    exitEdit()
+  })
+  cancelBtn.addEventListener('click', exitEdit)
+  revertBtn.addEventListener('click', () => {
+    if (!current) return
+    setCodeEdit(lesson, current.name, null)
+    termAppend('t-meta', `(已还原 ${current.name} 的修改)\n`)
+    refreshEditIndicators(lesson)
+    exitEdit()
+  })
+
+  // 页签上的 ● 修改标记
+  function refreshMarks() {
+    const edited = lessonEdits(lesson)
+    for (const tab of tabs.children) {
+      tab.classList.toggle('modified', Boolean(edited[tab.dataset.name]))
+    }
+  }
 
   let first = true
   for (const entry of entries) {
     const tab = el('button', 'code-tab', entry.label)
+    tab.dataset.name = entry.name
     tab.addEventListener('click', () => {
       for (const t of tabs.children) t.classList.toggle('active', t === tab)
-      codeEl.className = `language-${entry.lang}`
-      codeEl.textContent = entry.code
-      try { hljs.highlightElement(codeEl) } catch { /* 忽略高亮错误 */ }
+      show(entry)
     })
     tabs.append(tab)
     if (first) { tab.click(); first = false }
   }
 
-  const copy = el('button', 'btn btn-ghost code-copy', '复制')
-  copy.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(codeEl.textContent)
-      copy.textContent = '已复制'
-      setTimeout(() => (copy.textContent = '复制'), 1200)
-    } catch { /* 剪贴板不可用时忽略 */ }
-  })
-  view.append(copy)
-
   section.append(tabs, view)
   return section
+}
+
+// 「还原代码修改」按钮的可见性
+function refreshEditIndicators(lesson) {
+  const btn = $('#reset-code-btn')
+  if (btn) {
+    const count = Object.keys(lessonEdits(lesson)).length
+    btn.hidden = count === 0
+    btn.textContent = count ? `还原代码修改（${count}）` : '还原代码修改'
+  }
 }
 
 // ---------- API Key ----------

@@ -1164,3 +1164,45 @@ article.md a.broken-doc-link {
   font-size: 13.5px;
 }
 .stale-banner .btn { flex-shrink: 0; padding: 5px 14px; }
+
+/* ---------- 代码编辑器 ---------- */
+
+.code-editor { display: flex; flex-direction: column; }
+.code-editor-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-soft);
+  background: var(--bg-soft);
+  flex-wrap: wrap;
+}
+.code-editor-hint { font-size: 12.5px; color: var(--fg-dim); }
+.code-editor-spacer { flex: 1; }
+.code-textarea {
+  width: 100%;
+  min-height: 380px;
+  padding: 14px 16px;
+  background: #05080d;
+  color: var(--fg);
+  border: none;
+  outline: none;
+  resize: vertical;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.6;
+  tab-size: 2;
+  white-space: pre;
+  overflow-x: auto;
+}
+.code-tab.modified::before {
+  content: '● ';
+  color: var(--yellow);
+}
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.section-head h2 { margin: 0; }
+.section-note { font-size: 13px; color: var(--fg-faint); }

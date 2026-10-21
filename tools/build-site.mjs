@@ -66,11 +66,14 @@ async function transpileLesson({ part, lesson, lessonPath }) {
     if (!file.endsWith('.ts')) continue
 
     let source = readFileSync(srcPath, 'utf8')
+    // content.json 里存补丁前的原文：页面展示与「改了再跑」的浏览器端
+    // 编译都以仓库原版为准（浏览器补丁在 dsh-launcher 里幂等重放）。
+    sources[file] = source
 
     // plugin-directory 在浏览器里用绝对 URL 动态 import manifest.ts /
     // 各插件 .ts，Cordis Loader 的相对路径改写管不到绝对 URL，这里补上。
     // 另外加一个 manifest 覆盖钩子（__DSH_MANIFEST__）：默认不生效，
-    // 第 27 课「真 API」模式用它换成去掉 mock 的 manifest 变体。
+    // 有代码编辑时整课 blob 化会用到它。
     if (file === 'plugin-directory.ts') {
       isPluginDirectory = true
       const before = source
@@ -85,8 +88,6 @@ async function transpileLesson({ part, lesson, lessonPath }) {
       )
       if (source !== before) patchedPluginDirectory = true
     }
-
-    sources[file] = source
 
     const result = await esbuild.transform(source, {
       loader: 'ts',
@@ -131,6 +132,18 @@ copyVendor('@deepseek-ai/cosmokit/lib/index.js', 'cosmokit.js')
 copyVendor('@deepseek-ai/cordis-plugin-loader/lib/index.js', 'cordis-plugin-loader.js')
 copyVendor('@deepseek-ai/schemastery/lib/index.mjs', 'schemastery.js')
 copyVendor('marked/lib/marked.esm.js', 'marked.esm.js')
+
+// sucrase：浏览器端 TS→ESM 转译（「改了再跑」用；与构建期 esbuild 同为
+// 只剥类型的语义）。CJS 包，default 导出带 transform。
+await esbuild.build({
+  entryPoints: [join(root, 'node_modules/sucrase/dist/index.js')],
+  bundle: true,
+  format: 'esm',
+  minify: true,
+  platform: 'browser',
+  outfile: join(vendorDir, 'sucrase.js'),
+  logLevel: 'warning',
+})
 
 // schemastery 声明为零依赖；这里做个断言，防止未来版本引入新依赖。
 for (const file of ['cordis.js', 'cosmokit.js', 'cordis-plugin-loader.js', 'schemastery.js']) {
