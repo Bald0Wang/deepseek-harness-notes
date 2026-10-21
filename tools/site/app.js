@@ -449,6 +449,8 @@ function stripFirstHeading(scope) {
 
 function highlightCode(scope) {
   for (const block of scope.querySelectorAll('pre code')) {
+    // v11 对打过 data-highlighted 标记的元素会直接跳过——重渲染复用元素时必须清掉
+    delete block.dataset.highlighted
     try { hljs.highlightElement(block) } catch { /* 高亮失败不影响阅读 */ }
   }
 }
@@ -927,6 +929,8 @@ function buildCodeSection(lesson) {
     codeEl.className = `language-${entry.lang}`
     // 展示内容：有修改的显示修改版
     codeEl.textContent = lessonEdits(lesson)[entry.name] ?? entry.code
+    // 同一个 <code> 会被页签切换反复使用，不清标记 hljs 会跳过第二次高亮
+    delete codeEl.dataset.highlighted
     try { hljs.highlightElement(codeEl) } catch { /* 忽略高亮错误 */ }
     editBtn.textContent = '✏️ 编辑'
     refreshMarks()

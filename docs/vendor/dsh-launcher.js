@@ -11,9 +11,9 @@
 //    「还原修改」「反复改同一文件」都天然干净：import map 一旦注册
 //    无法撤销，但我们的 key 全部带内容哈希，每版独立、互不覆盖。
 
-import { Context } from './cordis.js?v=1792581065675'
-import Loader from './cordis-plugin-loader.js?v=1792581065675'
-import { parseYmlEntries } from './yml-entries.js?v=1792581065675'
+import { Context } from './cordis.js?v=1792581452637'
+import Loader from './cordis-plugin-loader.js?v=1792581452637'
+import { parseYmlEntries } from './yml-entries.js?v=1792581452637'
 
 // FiberState：0 PENDING / 1 LOADING / 2 ACTIVE / 3 FAILED / 4 UNLOADING / 5 DISPOSED
 const FiberState = { PENDING: 0, LOADING: 1, ACTIVE: 2, FAILED: 3, UNLOADING: 4, DISPOSED: 5 }
@@ -61,7 +61,7 @@ function patchPluginDirectorySource(source, fileName) {
  * @returns { canonicalUrl('….js') → { url: blob 或带哈希 URL, ns: 模块命名空间 Promise } }
  */
 async function compileLesson(lessonUrl, sources, write) {
-  const { default: sucrase } = await import('./sucrase.js?v=1792581065675')
+  const { default: sucrase } = await import('./sucrase.js?v=1792581452637')
 
   // 1) 全部转译 + 相对导入改写成 canonical?__dsh_edit=<hash>
   //    hash 基于目标文件的实际内容 → 内容变则 key 变，import map 永不覆盖。
